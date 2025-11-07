@@ -10,17 +10,21 @@ import {
 import { type ParticipantsListProps, type PersonalInformation } from "./types";
 import "./ParticipantsList.scss";
 
-const ParticipantsList = ({ participants, roomId }: ParticipantsListProps & { roomId: string }) => {
+const ParticipantsList = ({
+  participants,
+  roomId,
+}: ParticipantsListProps & { roomId: string }) => {
   const { userCode } = useParams();
+  const [participantList, setParticipantList] = useState(participants);
   const [selectedParticipant, setSelectedParticipant] =
     useState<PersonalInformation | null>(null);
 
-  const admin = participants?.find((participant) => participant?.isAdmin);
-  const restParticipants = participants?.filter(
-    (participant) => !participant?.isAdmin,
+  const admin = participantList?.find((participant) => participant?.isAdmin);
+  const restParticipants = participantList?.filter(
+    (participant) => !participant?.isAdmin
   );
 
-  const isParticipantsMoreThanTen = participants.length > 10;
+  const isParticipantsMoreThanTen = participantList.length > 10;
 
   const handleInfoButtonClick = (participant: Participant) => {
     const personalInfoData: PersonalInformation = {
@@ -37,21 +41,29 @@ const ParticipantsList = ({ participants, roomId }: ParticipantsListProps & { ro
   const handleModalClose = () => setSelectedParticipant(null);
 
   const handleUserDeleted = (deletedUserId: string) => {
-    console.log("User deleted:", deletedUserId);
+    setParticipantList((prevList) =>
+      prevList.filter((p) => p.id.toString() !== deletedUserId)
+    );
   };
 
   return (
     <div
-      className={`participant-list ${isParticipantsMoreThanTen ? "participant-list--shift-bg-image" : ""}`}
+      className={`participant-list ${
+        isParticipantsMoreThanTen ? "participant-list--shift-bg-image" : ""
+      }`}
     >
       <div
-        className={`participant-list__content ${isParticipantsMoreThanTen ? "participant-list__content--extra-padding" : ""}`}
+        className={`participant-list__content ${
+          isParticipantsMoreThanTen
+            ? "participant-list__content--extra-padding"
+            : ""
+        }`}
       >
         <div className="participant-list-header">
           <h3 className="participant-list-header__title">Who’s Playing?</h3>
 
           <span className="participant-list-counter__current">
-            {participants?.length ?? 0}/
+            {participantList?.length ?? 0}/
           </span>
 
           <span className="participant-list-counter__max">
@@ -68,7 +80,9 @@ const ParticipantsList = ({ participants, roomId }: ParticipantsListProps & { ro
               isCurrentUser={userCode === admin.userCode}
               isAdmin={admin.isAdmin}
               isCurrentUserAdmin={userCode === admin.userCode}
-              adminInfo={`${admin.phone}${admin.email ? `\n${admin.email}` : ""}`}
+              adminInfo={`${admin.phone}${
+                admin.email ? `\n${admin.email}` : ""
+              }`}
               participantLink={generateParticipantLink(admin.userCode)}
               userId={admin.id.toString()}
               roomId={roomId}
