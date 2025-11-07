@@ -19,7 +19,7 @@ const DeleteUserButton = ({
     toasterRef.current?.show(message, type, "small");
   };
 
-  const API_BASE = "https://localhost:60961/api";
+  const API_BASE = "https://secretbuochka-backend.onrender.com/api";
 
     const handleClick = async () => {
     try {
